@@ -29,6 +29,8 @@ export const DEFAULT_SCORING_THRESHOLDS: ScoringThresholds = {
   strongDownPaymentPercent: 20,
 };
 
+const DTI_PRECISION_DECIMAL_PLACES = 4;
+
 const HOUSING_COMPONENT_FIELDS: Array<keyof HousingExpenseInfo> = [
   "principalAndInterest",
   "propertyTaxes",
@@ -68,7 +70,7 @@ export function calculatePreliminaryBackendDtiPercent(params: {
   }
 
   const totalDebt = calculateTotalRecurringMonthlyDebt(params.debtInfo);
-  return ((totalDebt + housingExpense) / grossMonthlyIncome) * 100;
+  return roundToDecimalPlaces(((totalDebt + housingExpense) / grossMonthlyIncome) * 100, DTI_PRECISION_DECIMAL_PLACES);
 }
 
 export function calculateDownPaymentPercent(params: {
@@ -187,6 +189,11 @@ function calculateScoringMetrics(lead: Lead): ScoringMetrics {
 
 function calculateTotalGrossMonthlyIncome(income: IncomeInfo): number {
   return income.grossMonthlyIncome + (income.otherMonthlyIncome ?? 0);
+}
+
+function roundToDecimalPlaces(value: number, decimalPlaces: number): number {
+  const factor = 10 ** decimalPlaces;
+  return Math.round((value + Number.EPSILON) * factor) / factor;
 }
 
 function addNumberIssue(
