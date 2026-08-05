@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Lint, type-check, and build
+    name: Lint, type-check, test, and build
     runs-on: ubuntu-latest
 
     steps:
@@ -30,6 +30,9 @@ jobs:
 
       - name: Run type check
         run: npm run typecheck
+
+      - name: Run unit tests
+        run: npm test
 
       - name: Run production build
         run: npm run build
