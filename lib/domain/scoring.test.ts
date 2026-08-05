@@ -8,7 +8,16 @@ import {
   scoreLeadPriority,
   validateLeadForScoring,
 } from "./scoring";
-import type { Lead } from "./types";
+import type { HousingExpenseInfo, Lead } from "./types";
+
+const completeHousingExpense = (total: number): HousingExpenseInfo => ({
+  principalAndInterest: total,
+  propertyTaxes: 0,
+  homeownersInsurance: 0,
+  hoaDues: 0,
+  mortgageInsurance: 0,
+  otherHousingCosts: 0,
+});
 
 function makeLead(overrides: Partial<Lead> = {}): Lead {
   const lead: Lead = {
@@ -53,7 +62,7 @@ function makeLead(overrides: Partial<Lead> = {}): Lead {
     property: { ...lead.property, ...overrides.property },
     income: { ...lead.income, ...overrides.income },
     debts: { ...lead.debts, ...overrides.debts },
-    housingExpense: { ...lead.housingExpense, ...overrides.housingExpense },
+    housingExpense: overrides.housingExpense ? { ...overrides.housingExpense } : lead.housingExpense,
     downPayment: { ...lead.downPayment, ...overrides.downPayment },
   };
 }
@@ -77,6 +86,15 @@ describe("scoring calculations", () => {
       income: makeLead().income,
       debtInfo: makeLead().debts,
       housingExpense: makeLead().housingExpense,
+    });
+    expect(dti).toBe(28);
+  });
+
+  it("rounds preliminary back-end DTI to stable precision", () => {
+    const dti = calculatePreliminaryBackendDtiPercent({
+      income: { grossMonthlyIncome: 10000 },
+      debtInfo: { liabilities: [{ label: "Fictional debt", monthlyPayment: 300 }] },
+      housingExpense: completeHousingExpense(2500.0000000000005),
     });
     expect(dti).toBe(28);
   });
@@ -118,7 +136,14 @@ describe("validation", () => {
   });
 
   it("flags conflicting housing inputs for manual review", () => {
-    const result = scoreLeadPriority(makeLead({ housingExpense: { statedTotalMonthlyHousingExpense: 2400 } }));
+    const result = scoreLeadPriority(
+      makeLead({
+        housingExpense: {
+          ...completeHousingExpense(2400),
+          statedTotalMonthlyHousingExpense: 2400,
+        },
+      }),
+    );
     expect(result.priority).toBe("Manual Review");
     expect(result.validationIssues).toEqual(expect.arrayContaining([expect.objectContaining({ field: "housingExpense", code: "conflicting" })]));
   });
@@ -133,12 +158,12 @@ describe("lead-priority scoring", () => {
   });
 
   it("returns Warm for moderate DTI", () => {
-    const result = scoreLeadPriority(makeLead({ housingExpense: { statedTotalMonthlyHousingExpense: 3600 }, downPayment: { amount: 40000 } }));
+    const result = scoreLeadPriority(makeLead({ housingExpense: completeHousingExpense(3600), downPayment: { amount: 40000 } }));
     expect(result.priority).toBe("Warm");
   });
 
   it("returns Cold for elevated DTI", () => {
-    const result = scoreLeadPriority(makeLead({ housingExpense: { statedTotalMonthlyHousingExpense: 4600 }, downPayment: { amount: 40000 } }));
+    const result = scoreLeadPriority(makeLead({ housingExpense: completeHousingExpense(4600), downPayment: { amount: 40000 } }));
     expect(result.priority).toBe("Cold");
   });
 
@@ -148,7 +173,7 @@ describe("lead-priority scoring", () => {
   });
 
   it("returns Not Ready for DTI above configured threshold without treating it as eligibility", () => {
-    const result = scoreLeadPriority(makeLead({ housingExpense: { statedTotalMonthlyHousingExpense: 5200 }, downPayment: { amount: 40000 } }));
+    const result = scoreLeadPriority(makeLead({ housingExpense: completeHousingExpense(5200), downPayment: { amount: 40000 } }));
     expect(result.priority).toBe("Not Ready");
     expect(result.recommendedNextAction).toContain("Do not treat this as eligibility denial");
   });
