@@ -51,6 +51,7 @@ export interface Lead {
   notes?: string;
   createdAt: string;
   updatedAt: string;
+  scoringResult?: ScoringResult;
 }
 
 export type ValidationSeverity = "warning" | "error";
