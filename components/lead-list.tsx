@@ -52,8 +52,8 @@ export function LeadList({ storage }: { storage?: LeadStorage }) {
               </div>
               <div className="grid gap-2 text-sm text-slate-700 sm:grid-cols-3 sm:text-right">
                 <Metric label="Priority" value={lead.scoringResult?.priority ?? "Not scored"} />
-                <Metric label="DTI" value={formatPercent(lead.scoringResult?.metrics.preliminaryBackendDtiPercent)} />
-                <Metric label="Down payment" value={formatPercent(lead.scoringResult?.metrics.downPaymentPercent)} />
+                <Metric label="Broker decision" value={formatBrokerDecision(lead.currentBrokerDecision?.brokerDecision)} />
+                <Metric label="Final status" value={lead.currentBrokerDecision?.finalLeadPriorityStatus ?? "Pending review"} />
               </div>
             </div>
           </Link>
@@ -76,6 +76,15 @@ function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
 
-function formatPercent(value: number | null | undefined): string {
-  return typeof value === "number" ? `${value.toFixed(2)}%` : "Unavailable";
+function formatBrokerDecision(value: string | undefined): string {
+  if (value === "recommendation_approved") {
+    return "Approved";
+  }
+  if (value === "recommendation_rejected") {
+    return "Rejected";
+  }
+  if (value === "recommendation_overridden") {
+    return "Overridden";
+  }
+  return "Pending review";
 }
