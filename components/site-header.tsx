@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/", label: "Dashboard" },
@@ -8,6 +11,8 @@ const navItems = [
 ];
 
 export function SiteHeader() {
+  const pathname = usePathname();
+
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between">
@@ -20,7 +25,10 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              aria-current={isActivePath(pathname, item.href) ? "page" : undefined}
+              className={isActivePath(pathname, item.href)
+                ? "rounded-full border border-blue-700 bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm"
+                : "rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"}
             >
               {item.label}
             </Link>
@@ -29,4 +37,11 @@ export function SiteHeader() {
       </div>
     </header>
   );
+}
+
+function isActivePath(pathname: string, href: string): boolean {
+  if (href === "/") {
+    return pathname === "/";
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
