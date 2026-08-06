@@ -52,19 +52,15 @@ export interface Lead {
   createdAt: string;
   updatedAt: string;
   scoringResult?: ScoringResult;
+  currentBrokerDecision?: BrokerDecision;
+  brokerDecisionHistory?: BrokerDecision[];
 }
 
 export type ValidationSeverity = "warning" | "error";
 
 export interface ValidationIssue {
   field: string;
-  code:
-    | "missing"
-    | "zero"
-    | "negative"
-    | "conflicting"
-    | "greaterThanPropertyPrice"
-    | "notFinite";
+  code: "missing" | "zero" | "negative" | "conflicting" | "greaterThanPropertyPrice" | "notFinite";
   message: string;
   severity: ValidationSeverity;
 }
@@ -86,21 +82,22 @@ export interface ScoringResult {
   recommendedNextAction: string;
 }
 
-export type BrokerDecisionStatus = "approvedForContact" | "rejected" | "override" | "needsMoreInformation";
+export type BrokerDecisionAction = "recommendation_approved" | "recommendation_rejected" | "recommendation_overridden";
+export type FinalLeadPriorityStatus = LeadPriority | "Rejected";
 
 export interface BrokerDecision {
+  id: string;
   leadId: string;
-  status: BrokerDecisionStatus;
-  decidedBy: string;
+  originalSystemScore: number;
+  originalRecommendation: LeadPriority;
+  brokerDecision: BrokerDecisionAction;
+  finalLeadPriorityStatus: FinalLeadPriorityStatus;
+  overrideReason?: string;
   decidedAt: string;
-  rationale: string;
+  scoringRuleVersion: string;
 }
 
-export type AuditEventType =
-  | "lead.created"
-  | "lead.updated"
-  | "scoring.calculated"
-  | "brokerDecision.recorded";
+export type AuditEventType = "lead.created" | "lead.updated" | "scoring.calculated" | BrokerDecisionAction;
 
 export interface AuditEvent {
   id: string;
