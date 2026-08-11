@@ -29,4 +29,4 @@ See [docs/phase-1-implementation-plan.md](docs/phase-1-implementation-plan.md).
 
 ## Current status
 
-Planning only. Application code has not been written yet.
+Phase 1 MVP complete and deployed. The application is live on Vercel and includes manual lead intake, preliminary DTI calculation, lead-priority scoring, broker review, dashboard views, local browser storage, and an auditable decision history.
