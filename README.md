@@ -19,7 +19,7 @@ The application will help a mortgage broker manually capture fictional borrower 
 
 See [docs/phase-1-implementation-plan.md](docs/phase-1-implementation-plan.md).
 
-## Planned stack
+## Tech stack
 
 - Next.js
 - TypeScript
