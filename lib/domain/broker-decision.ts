@@ -26,7 +26,7 @@ export async function recordBrokerDecision(storage: LeadStorage, input: RecordBr
 
   const overrideReason = input.overrideReason?.trim();
   if (input.action === "recommendation_overridden" && !overrideReason) {
-    return { error: "Override reason is required when changing the lead-priority score." };
+    return { error: "Override reason is required when changing the lead-priority status." };
   }
   if (input.action === "recommendation_overridden" && !input.overridePriority) {
     return { error: "Override lead-priority status is required." };
@@ -37,7 +37,6 @@ export async function recordBrokerDecision(storage: LeadStorage, input: RecordBr
   const decision: BrokerDecision = {
     id: createUniqueId("decision"),
     leadId: lead.id,
-    originalSystemScore: lead.scoringResult.score,
     originalRecommendation: lead.scoringResult.priority,
     brokerDecision: input.action,
     finalLeadPriorityStatus,

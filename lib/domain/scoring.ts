@@ -145,33 +145,33 @@ export function scoreLeadPriority(lead: Lead, thresholds: ScoringThresholds = DE
   const blockingIssues = validationIssues.filter((issue) => issue.severity === "error");
 
   if (blockingIssues.some((issue) => issue.code === "conflicting")) {
-    return result("Manual Review", 0, metrics, validationIssues, ["Conflicting inputs must be reviewed by a broker before a lead-priority recommendation is made."], "Resolve conflicting inputs and manually review the lead before prioritization.");
+    return result("Manual Review", metrics, validationIssues, ["Conflicting inputs must be reviewed by a broker before a lead-priority recommendation is made."], "Resolve conflicting inputs and manually review the lead before prioritization.");
   }
 
   if (blockingIssues.length > 0 || metrics.preliminaryBackendDtiPercent === null || metrics.downPaymentPercent === null) {
-    return result("Manual Review", 0, metrics, validationIssues, ["Required calculation inputs are missing or invalid."], "Collect or correct the missing borrower, property, income, debt, housing expense, and down-payment details.");
+    return result("Manual Review", metrics, validationIssues, ["Required calculation inputs are missing or invalid."], "Collect or correct the missing borrower, property, income, debt, housing expense, and down-payment details.");
   }
 
   const dti = metrics.preliminaryBackendDtiPercent;
   const downPaymentPercent = metrics.downPaymentPercent;
 
   if (downPaymentPercent < thresholds.readyMinDownPaymentPercent) {
-    return result("Not Ready", 10, metrics, validationIssues, ["Down payment is below the configured readiness threshold."], "Ask the borrower whether additional down-payment funds or assistance are available before broker review.");
+    return result("Not Ready", metrics, validationIssues, ["Down payment is below the configured readiness threshold."], "Ask the borrower whether additional down-payment funds or assistance are available before broker review.");
   }
 
   if (dti <= thresholds.hotMaxDtiPercent && downPaymentPercent >= thresholds.strongDownPaymentPercent) {
-    return result("Hot", 90, metrics, validationIssues, ["Preliminary back-end DTI is within the Hot threshold.", "Down payment meets or exceeds the strong down-payment threshold."], "Prioritize broker review and confirm documentation before any borrower-facing next step.");
+    return result("Hot", metrics, validationIssues, ["Preliminary back-end DTI is within the Hot threshold.", "Down payment meets or exceeds the strong down-payment threshold."], "Prioritize broker review and confirm documentation before any borrower-facing next step.");
   }
 
   if (dti <= thresholds.warmMaxDtiPercent) {
-    return result("Warm", 70, metrics, validationIssues, ["Preliminary back-end DTI is within the Warm threshold."], "Review with a broker and request supporting income, debt, asset, and housing-expense documentation.");
+    return result("Warm", metrics, validationIssues, ["Preliminary back-end DTI is within the Warm threshold."], "Review with a broker and request supporting income, debt, asset, and housing-expense documentation.");
   }
 
   if (dti <= thresholds.coldMaxDtiPercent) {
-    return result("Cold", 40, metrics, validationIssues, ["Preliminary back-end DTI is elevated but within the Cold threshold."], "Broker should review constraints and discuss whether borrower timing or debt reduction could improve readiness.");
+    return result("Cold", metrics, validationIssues, ["Preliminary back-end DTI is elevated but within the Cold threshold."], "Broker should review constraints and discuss whether borrower timing or debt reduction could improve readiness.");
   }
 
-  return result("Not Ready", 20, metrics, validationIssues, ["Preliminary back-end DTI is above the configured lead-priority threshold."], "Do not treat this as eligibility denial; route to broker review for education and potential future readiness steps.");
+  return result("Not Ready", metrics, validationIssues, ["Preliminary back-end DTI is above the configured lead-priority threshold."], "Do not treat this as eligibility denial; route to broker review for education and potential future readiness steps.");
 }
 
 function calculateScoringMetrics(lead: Lead): ScoringMetrics {
@@ -226,7 +226,6 @@ function addNumberIssue(
 
 function result(
   priority: LeadPriority,
-  score: number,
   metrics: ScoringMetrics,
   validationIssues: ValidationIssue[],
   reasons: string[],
@@ -235,7 +234,6 @@ function result(
   return {
     ruleVersion: SCORING_RULE_VERSION,
     priority,
-    score,
     metrics,
     validationIssues,
     reasons,

@@ -75,7 +75,6 @@ export interface ScoringMetrics {
 export interface ScoringResult {
   ruleVersion: string;
   priority: LeadPriority;
-  score: number;
   metrics: ScoringMetrics;
   validationIssues: ValidationIssue[];
   reasons: string[];
@@ -88,7 +87,6 @@ export type FinalLeadPriorityStatus = LeadPriority | "Rejected";
 export interface BrokerDecision {
   id: string;
   leadId: string;
-  originalSystemScore: number;
   originalRecommendation: LeadPriority;
   brokerDecision: BrokerDecisionAction;
   finalLeadPriorityStatus: FinalLeadPriorityStatus;
