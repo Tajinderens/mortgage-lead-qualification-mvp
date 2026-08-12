@@ -90,7 +90,7 @@ describe("browser lead storage", () => {
 });
 
 describe("audit events", () => {
-  it("creates and stores lead-created and score-generated audit events", async () => {
+  it("creates and stores lead-created and scoring-calculated audit events", async () => {
     const storage = new BrowserLocalStorageLeadStorage(new MemoryStorage());
     const lead = makeLead();
     const score = scoreLeadPriority(lead);
@@ -124,7 +124,7 @@ describe("lead form validation", () => {
 });
 
 describe("lead form submission", () => {
-  it("saves a successfully submitted lead with score and audit history", async () => {
+  it("saves a successfully submitted lead with priority and audit history", async () => {
     const storage = new BrowserLocalStorageLeadStorage(new MemoryStorage());
 
     const result = await submitLeadForm(validValues, storage, "2026-01-01T00:00:00.000Z");
