@@ -29,7 +29,6 @@ export function createScoreGeneratedAuditEvent(
     metadata: {
       ruleVersion: scoringResult.ruleVersion,
       priority: scoringResult.priority,
-      score: scoringResult.score,
       preliminaryBackendDtiPercent: scoringResult.metrics.preliminaryBackendDtiPercent,
       downPaymentPercent: scoringResult.metrics.downPaymentPercent,
       demoDataOnly: true,
@@ -46,7 +45,6 @@ export function createBrokerDecisionAuditEvent(lead: Lead, decision: BrokerDecis
     actor: "demo-broker",
     summary: brokerDecisionSummary(decision),
     metadata: {
-      originalSystemScore: decision.originalSystemScore,
       originalRecommendation: decision.originalRecommendation,
       brokerDecision: decision.brokerDecision,
       finalLeadPriorityStatus: decision.finalLeadPriorityStatus,
