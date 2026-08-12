@@ -16,7 +16,6 @@ function makeLead(id: string, priority: LeadPriority, createdAt: string, reviewe
     scoringResult: {
       ruleVersion: "test-rule",
       priority,
-      score: 1,
       metrics: {
         totalRecurringMonthlyDebt: 0,
         totalProposedMonthlyHousingExpense: 2500,
@@ -30,7 +29,6 @@ function makeLead(id: string, priority: LeadPriority, createdAt: string, reviewe
     currentBrokerDecision: reviewed ? {
       id: `decision_${id}`,
       leadId: id,
-      originalSystemScore: 1,
       originalRecommendation: priority,
       brokerDecision: "recommendation_approved",
       finalLeadPriorityStatus: priority,
