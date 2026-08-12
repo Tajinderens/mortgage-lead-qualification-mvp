@@ -61,7 +61,7 @@ function existingAuditEvent(leadId: string): AuditEvent {
 }
 
 describe("broker decision controls", () => {
-  it("approves a recommendation and preserves the original system score", async () => {
+  it("approves a recommendation and preserves the original system recommendation", async () => {
     const lead = makeLead();
     const storage = new MemoryLeadStorage([lead]);
 
@@ -73,7 +73,6 @@ describe("broker decision controls", () => {
 
     expect(result.error).toBeUndefined();
     expect(result.decision).toEqual(expect.objectContaining({
-      originalSystemScore: 90,
       originalRecommendation: "Hot",
       brokerDecision: "recommendation_approved",
       finalLeadPriorityStatus: "Hot",
@@ -81,7 +80,7 @@ describe("broker decision controls", () => {
     }));
     const savedLead = await storage.getLead(lead.id);
     expect(savedLead?.scoringResult).toEqual(lead.scoringResult);
-    expect(savedLead?.currentBrokerDecision?.originalSystemScore).toBe(90);
+    expect(savedLead?.currentBrokerDecision?.originalRecommendation).toBe("Hot");
   });
 
   it("rejects a recommendation", async () => {
@@ -99,7 +98,7 @@ describe("broker decision controls", () => {
     expect(result.decision?.finalLeadPriorityStatus).toBe("Rejected");
   });
 
-  it("overrides a score with a reason", async () => {
+  it("overrides a recommendation with a reason", async () => {
     const lead = makeLead();
     const storage = new MemoryLeadStorage([lead]);
 
@@ -113,7 +112,6 @@ describe("broker decision controls", () => {
 
     expect(result.error).toBeUndefined();
     expect(result.decision).toEqual(expect.objectContaining({
-      originalSystemScore: 90,
       originalRecommendation: "Hot",
       finalLeadPriorityStatus: "Warm",
       overrideReason: "Fictional broker noted missing documentation.",
