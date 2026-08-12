@@ -53,16 +53,15 @@ export function LeadDetail({ leadId, storage }: { leadId: string; storage?: Lead
         </p>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-3">
         <SummaryCard label="Lead priority" value={scoringResult?.priority ?? "Not scored"} />
-        <SummaryCard label="Score" value={scoringResult ? String(scoringResult.score) : "Unavailable"} />
         <SummaryCard label="Preliminary DTI" value={formatPercent(scoringResult?.metrics.preliminaryBackendDtiPercent)} />
         <SummaryCard label="Down payment" value={formatPercent(scoringResult?.metrics.downPaymentPercent)} />
       </section>
 
       {scoringResult ? (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-950">Score explanation</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Lead-priority explanation</h2>
           <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2">
             <Metric label="Scoring-rule version" value={scoringResult.ruleVersion} />
             <Metric label="Recurring monthly debt" value={formatCurrency(scoringResult.metrics.totalRecurringMonthlyDebt)} />
